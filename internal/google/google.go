@@ -18,9 +18,7 @@ const (
 )
 
 type Client struct {
-	Proxy        string
-	ClientID     string
-	ClientSecret string
+	Proxy string
 }
 
 func (c *Client) getHttpClient() *http.Client {
@@ -61,14 +59,8 @@ type LoadProjectResponse struct {
 }
 
 func (c *Client) RefreshAccessToken(refreshToken string) (string, error) {
-	clientID := c.ClientID
-	if clientID == "" {
-		clientID = "1071006060591-tmhssin2h21lcre235vtolojh4g403ep.apps.googleusercontent.com"
-	}
-	clientSecret := c.ClientSecret
-	if clientSecret == "" {
-		clientSecret = "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"
-	}
+	clientID := "1071006060591-tmhssin2h21lcre235vtolojh4g403ep.apps.googleusercontent.com"
+	clientSecret := "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"
 
 	data := url.Values{}
 	data.Set("client_id", clientID)

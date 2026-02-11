@@ -39,9 +39,7 @@ func NewRotatorEngine(cfg *config.AppConfig) *RotatorEngine {
 	return &RotatorEngine{
 		Config: cfg,
 		Client: &google.Client{
-			Proxy:        cfg.Rotator.Proxy,
-			ClientID:     cfg.Rotator.ClientID,
-			ClientSecret: cfg.Rotator.ClientSecret,
+			Proxy: cfg.Rotator.Proxy,
 		},
 		Status: make(map[string]int),
 		done:   make(chan bool),

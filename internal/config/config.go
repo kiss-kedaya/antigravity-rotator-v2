@@ -16,8 +16,6 @@ type RotatorConfig struct {
 	RotateInterval int  `json:"rotateInterval"` // in minutes
 	OpenClawBin    string `json:"openclawBin"`
 	Proxy          string `json:"proxy"`
-	ClientID       string `json:"clientId"`
-	ClientSecret   string `json:"clientSecret"`
 }
 
 type AppConfig struct {
