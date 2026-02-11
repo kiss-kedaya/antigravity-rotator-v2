@@ -1,0 +1,29 @@
+# Wails
+build/bin/
+frontend/dist/
+frontend/node_modules/
+wails.exe
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# OpenClaw / Sensitive
+.env
+*.json
+!manifest.json
+!package.json
+!wails.json
+!project.json
+screenshot*.png
+*.log
