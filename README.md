@@ -15,7 +15,7 @@
 - **Real-Time Visual Dashboard**: A modern React-based UI with live event-driven updates (Wails Events) showing the health and availability of your entire account cluster.
 - **Intelligent Auto-Rotation**: A robust background engine that automatically switches to healthy accounts when the current one hits a custom quota threshold.
 - **Cross-Workspace Synchronization**: Automatically detects and syncs authentication credentials across all your OpenClaw agent workspaces.
-- **Native Network Performance**: Replaced external dependencies with native Go HTTP clients, optimized for proxy environments (e.g., Clashing 7890).
+- **Native Network Performance**: Optimized native Go HTTP clients for proxy environments (e.g., Clashing 7890).
 
 ### 🛠️ Installation & Setup
 
@@ -23,7 +23,7 @@
 - **Go** (1.21 or higher)
 - **Node.js** (18 or higher)
 - **Wails CLI** (Install via `go install github.com/wailsapp/wails/v2/cmd/wails@latest`)
-- **OpenClaw Gateway** (The core engine this tool manages)
+- **OpenClaw Gateway** (Ensure the gateway is running)
 
 #### Building from Source
 ```bash
@@ -34,22 +34,29 @@ cd antigravity-rotator-v2
 # Build the production binary
 wails build -clean
 ```
-The binary will be located in the `build/bin/` directory.
+The binary will be generated in the `build/bin/` directory.
 
-#### Development & Debugging
-```bash
-# Start frontend dev server
-cd frontend && npm install && npm run dev
+### ⚙️ Usage Guide
 
-# Run Wails in development mode (with hot reload)
-wails dev
-```
+1. **Launch**: Run the compiled `.exe` (on Windows) or the corresponding binary for your OS.
+2. **Import Accounts**: Use the "Import JSON" button to load your Google Refresh Tokens. Format should be an array of `{email, refresh_token}`.
+3. **Set Threshold**: Adjust the "Auto-Isolation Threshold" slider. If a model's quota drops below this percentage, the engine will trigger a rotation.
+4. **Manual Rotation**: Click "Force Rotation" to immediately switch to the best available account and model based on your priority list.
+5. **Model Priority**: Click on model names in the "Priority Queue" to promote them to Primary status.
+
+### 🔧 Advanced Configuration
+
+The application stores its configuration in `~/.openclaw/antigravity-rotator-v2.json`. 
+
+- **`modelPriority`**: An array of model IDs (e.g., `google-antigravity/gemini-3-pro-high`) in order of preference.
+- **`rotateInterval`**: The frequency (in minutes) at which the auto-rotation engine checks account health.
+- **`openclawBin`**: (Optional) Path to your `openclaw` executable if it's not in your system PATH.
 
 ### 💡 Troubleshooting
 
-1. **Quota showing --%**: Ensure your OpenClaw Gateway is running and your `auth-profiles.json` contains valid refresh tokens. Check your network proxy settings if Google APIs are unreachable.
-2. **"invalid character 'p'" Error**: This was fixed in V2.4.0. If you encounter it, ensure you are running the latest version which filters CLI log noise from JSON outputs.
-3. **RPC Connection Failed**: Verify that the OpenClaw Gateway RPC port (default 18789) is accessible and not blocked by a firewall.
+- **Quota showing --%**: Verify your `auth-profiles.json` contains valid tokens and the OpenClaw Gateway is reachable.
+- **RPC Errors**: Ensure the Gateway RPC port (default 18789) is not blocked.
+- **Network Issues**: Ensure your proxy (default 127.0.0.1:7890) is active if you are in a restricted network region.
 
 ---
 
@@ -59,46 +66,32 @@ wails dev
 
 ### 🚀 核心功能
 
-- **高性能并发监控**：利用 Go 协程并行获取多个账号的配额，探测速度提升 10 倍以上。
-- **零停机秒级轮换**：基于 OpenClaw RPC (`config.patch`) 实现账号与模型的热切换，无需重启 Gateway。
-- **实时数据可视化**：采用 React 构建的高级 UI，通过 Wails Events 实时推送配额变动，状态一目了然。
-- **智能自动化引擎**：后台常驻轮换逻辑，当当前账号达到自定义低配额阈值时自动执行调度。
+- **高性能并发监控**：利用 Go 协程并行获取多个账号的配额，探测速度极快。
+- **零停机秒级轮换**：基于 OpenClaw RPC (`config.patch`) 实现账号与模型的热切换。
+- **实时数据可视化**：采用 React 构建的高级 UI，通过 Wails Events 实时推送配额变动。
+- **智能自动化引擎**：后台常驻轮换逻辑，自动调度高配额账号。
 - **多工作区自动同步**：一键识别并同步所有 OpenClaw 智能体工作区的凭据文件。
-- **原生网络优化**：弃用外部 curl 调用，改用原生 Go HTTP 客户端，深度优化了 7890 代理环境下的稳定性。
 
 ### 🛠️ 安装与运行
 
 #### 环境要求
 - **Go** (1.21+)
 - **Node.js** (18+)
-- **Wails CLI** (执行 `go install github.com/wailsapp/wails/v2/cmd/wails@latest` 安装)
-- **OpenClaw Gateway** (被管理的支撑底座)
+- **Wails CLI**
+- **OpenClaw Gateway**
 
 #### 编译步骤
 ```bash
-# 克隆仓库
 git clone https://github.com/kiss-kedaya/antigravity-rotator-v2.git
 cd antigravity-rotator-v2
-
-# 编译正式版二进制文件
 wails build -clean
 ```
-编译产物位于 `build/bin/` 文件夹下。
 
-#### 调试指南
-```bash
-# 启动前端开发环境
-cd frontend && npm install && npm run dev
+### 📖 使用说明
 
-# 启动 Wails 开发模式 (支持热重载)
-wails dev
-```
-
-### 💡 常见问题排除
-
-1. **配额显示 --%**：请检查 OpenClaw Gateway 是否正常运行，且 `auth-profiles.json` 中包含有效的 Refresh Token。若访问 Google API 受限，请检查代理设置。
-2. **"invalid character 'p'" 报错**：此问题已在 V2.4.0 修复。请确保使用的是最新代码，它能自动过滤 CLI 的日志干扰。
-3. **RPC 连接失败**：请确认 OpenClaw Gateway 的 RPC 端口（默认 18789）未被防火墙拦截。
+1. **导入凭据**：点击“导入 JSON”，格式为包含 `email` 和 `refresh_token` 的数组。
+2. **阈值设定**：滑动调节“自动隔离阈值”。当配额低于此值时，系统将自动寻找替代账号。
+3. **模型优先级**：在“执行优先级”列表中点击模型名称，可将其提升为首选（Primary）。
 
 ## 开源协议
 MIT License
